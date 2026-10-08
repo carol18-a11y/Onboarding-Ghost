@@ -1,0 +1,71 @@
+.focus-container {
+  position: relative;
+  display: inline-flex;
+  gap: 0.35em;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+  user-select: none;
+  vertical-align: baseline;
+}
+
+.focus-word {
+  position: relative;
+  font-size: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  display: inline-block;
+}
+
+.focus-word.word-purple {
+  color: #7c3aed; /* Solid purple, single color without gradient */
+}
+
+.focus-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  box-sizing: content-box;
+  border: none;
+}
+
+.corner {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 3px solid var(--border-color, #7c3aed);
+  filter: drop-shadow(0px 0px 5px var(--glow-color, rgba(124, 58, 237, 0.6)));
+  border-radius: 2px;
+  transition: none;
+}
+
+.top-left {
+  top: -6px;
+  left: -6px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.top-right {
+  top: -6px;
+  right: -6px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.bottom-left {
+  bottom: -6px;
+  left: -6px;
+  border-right: none;
+  border-top: none;
+}
+
+.bottom-right {
+  bottom: -6px;
+  right: -6px;
+  border-left: none;
+  border-top: none;
+}

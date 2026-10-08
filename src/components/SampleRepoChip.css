@@ -1,0 +1,87 @@
+.repo-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid #000000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #0f172a;
+  background-color: #f8fafc;
+  cursor: pointer;
+  outline: none;
+  isolation: isolate;
+  overflow: hidden;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Background crossfade layer inspired by React Bits state transition */
+.repo-chip-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.repo-chip:hover .repo-chip-bg,
+.repo-chip.selected .repo-chip-bg {
+  opacity: 1;
+}
+
+.repo-chip:hover,
+.repo-chip.selected {
+  border-color: #000000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.repo-chip:active {
+  transform: translateY(0px);
+}
+
+.repo-chip-text {
+  position: relative;
+  z-index: 2;
+  color: #0f172a;
+  transition: color 0.3s ease;
+}
+
+.repo-chip.selected .repo-chip-text {
+  color: #000000;
+  font-weight: 600;
+}
+
+/* Dark theme variant */
+.repo-chip.dark-chip {
+  background-color: #141422;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.repo-chip.dark-chip .repo-chip-bg {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.repo-chip.dark-chip .repo-chip-text {
+  color: #e2e8f0;
+}
+
+.repo-chip.dark-chip:hover,
+.repo-chip.dark-chip.selected {
+  border-color: #a855f7;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.3);
+}
+
+.repo-chip.dark-chip.selected .repo-chip-text {
+  color: #ffffff;
+}
