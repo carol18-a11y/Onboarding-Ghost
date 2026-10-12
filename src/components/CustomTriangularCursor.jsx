@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 
 /**
  * CustomTriangularCursor
- * Renders a larger, solid black filled triangular cursor with inertia & direction rotation.
- * Scoped strictly to target containerRef (Features & Live Demo sections).
+ * Renders a solid black filled triangular cursor with inertia & directional rotation.
+ * Positioned fixed across the viewport so transitions between sections are 100% continuous
+ * without jumps, handoff flickers, or scroll clipping.
  */
 export default function CustomTriangularCursor({ containerRef }) {
   const cursorRef = useRef(null);
@@ -14,6 +15,7 @@ export default function CustomTriangularCursor({ containerRef }) {
   const mousePos = useRef({ x: -100, y: -100 });
   const currentPos = useRef({ x: -100, y: -100 });
   const currentAngle = useRef(0);
+  const isHoveringInteractive = useRef(false);
   const animationFrameId = useRef(null);
 
   useEffect(() => {
@@ -29,39 +31,66 @@ export default function CustomTriangularCursor({ containerRef }) {
     const container = containerRef?.current;
     if (!container) return;
 
-    const handlePointerMove = (e) => {
+    const checkBounds = (clientX, clientY) => {
       const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      return (
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom
+      );
+    };
 
-      if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+    const handlePointerMove = (e) => {
+      const inBounds = checkBounds(e.clientX, e.clientY);
+
+      if (!inBounds) {
         if (isInside) {
           setIsInside(false);
-          container.style.cursor = 'auto';
+          container.classList.remove('hide-system-cursor');
         }
         return;
       }
 
       if (!isInside) {
         setIsInside(true);
-        container.style.cursor = 'none';
+        container.classList.add('hide-system-cursor');
       }
 
       if (!hasMoved) {
         setHasMoved(true);
-        currentPos.current = { x, y };
+        currentPos.current = { x: e.clientX, y: e.clientY };
       }
 
-      mousePos.current = { x, y };
+      mousePos.current = { x: e.clientX, y: e.clientY };
+
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      isHoveringInteractive.current = Boolean(
+        target?.closest('button, a, input, select, textarea, [role="button"], [tabindex="0"]')
+      );
     };
 
     const handlePointerLeave = () => {
       setIsInside(false);
-      container.style.cursor = 'auto';
+      container.classList.remove('hide-system-cursor');
     };
 
-    container.addEventListener('pointermove', handlePointerMove);
-    container.addEventListener('pointerleave', handlePointerLeave);
+    const handleScroll = () => {
+      if (mousePos.current.x < 0) return;
+      const inBounds = checkBounds(mousePos.current.x, mousePos.current.y);
+      if (inBounds !== isInside) {
+        setIsInside(inBounds);
+        if (inBounds) {
+          container.classList.add('hide-system-cursor');
+        } else {
+          container.classList.remove('hide-system-cursor');
+        }
+      }
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerleave', handlePointerLeave);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     const render = () => {
       const targetX = mousePos.current.x;
@@ -70,8 +99,8 @@ export default function CustomTriangularCursor({ containerRef }) {
       const dx = targetX - currentPos.current.x;
       const dy = targetY - currentPos.current.y;
 
-      // 100-200ms inertia smoothing
-      const lerp = 0.18;
+      // Smooth inertia lerp
+      const lerp = 0.22;
       currentPos.current.x += dx * lerp;
       currentPos.current.y += dy * lerp;
 
@@ -82,14 +111,15 @@ export default function CustomTriangularCursor({ containerRef }) {
         let diff = angle - currentAngle.current;
         while (diff < -Math.PI) diff += Math.PI * 2;
         while (diff > Math.PI) diff -= Math.PI * 2;
-        currentAngle.current += diff * 0.2;
+        currentAngle.current += diff * 0.22;
       }
 
       if (cursorRef.current) {
         const x = currentPos.current.x;
         const y = currentPos.current.y;
         const deg = (currentAngle.current * 180) / Math.PI;
-        cursorRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${deg}deg)`;
+        const scale = isHoveringInteractive.current ? 1.15 : 1;
+        cursorRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${deg}deg) scale(${scale})`;
       }
 
       animationFrameId.current = requestAnimationFrame(render);
@@ -99,9 +129,10 @@ export default function CustomTriangularCursor({ containerRef }) {
 
     return () => {
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-      container.removeEventListener('pointermove', handlePointerMove);
-      container.removeEventListener('pointerleave', handlePointerLeave);
-      container.style.cursor = 'auto';
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerleave', handlePointerLeave);
+      window.removeEventListener('scroll', handleScroll);
+      container.classList.remove('hide-system-cursor');
     };
   }, [containerRef, isInside, hasMoved]);
 
@@ -110,12 +141,12 @@ export default function CustomTriangularCursor({ containerRef }) {
   return (
     <div
       ref={cursorRef}
-      className={`absolute top-0 left-0 pointer-events-none z-50 transition-opacity duration-300 ${
+      className={`fixed top-0 left-0 pointer-events-none z-[9999] transition-opacity duration-200 ${
         isInside ? 'opacity-100' : 'opacity-0'
       }`}
       style={{ willChange: 'transform' }}
     >
-      {/* Larger, solid black filled triangular custom cursor */}
+      {/* Solid black filled triangular custom cursor */}
       <svg
         width="26"
         height="32"

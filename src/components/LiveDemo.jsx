@@ -1,13 +1,10 @@
 import React, { useState, useRef } from 'react';
-import CustomTriangularCursor from './CustomTriangularCursor';
 import { 
   BarChart3, 
   BookOpen, 
   FileCode2, 
   ChevronLeft, 
   ChevronRight, 
-  Play, 
-  Pause, 
   HelpCircle, 
   Users, 
   History, 
@@ -22,8 +19,6 @@ export default function LiveDemo({ theme = 'light' }) {
 
   const [activeStop, setActiveStop] = useState(0);
   const [activeTab, setActiveTab] = useState('story');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState('1.0x');
   const [presetFilter, setPresetFilter] = useState('New Dev');
   const [selectedRepo, setSelectedRepo] = useState('facebook/react (React Fiber Tour)');
 
@@ -130,34 +125,17 @@ export default function LiveDemo({ theme = 'light' }) {
   ];
 
   const currentStop = tourData[activeStop];
-
-  const toggleAudio = () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    } else {
-      setIsPlaying(true);
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(currentStop.audioNarration);
-        utterance.rate = parseFloat(playbackSpeed);
-        utterance.onend = () => setIsPlaying(false);
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-  };
+  const totalStops = tourData.length;
 
   const handleNextStop = () => {
-    if (activeStop < tourData.length - 1) {
+    if (activeStop < totalStops - 1) {
       setActiveStop(prev => prev + 1);
-      setIsPlaying(false);
     }
   };
 
   const handlePrevStop = () => {
     if (activeStop > 0) {
       setActiveStop(prev => prev - 1);
-      setIsPlaying(false);
     }
   };
 
@@ -169,9 +147,6 @@ export default function LiveDemo({ theme = 'light' }) {
         isDark ? 'bg-[#09090b] text-slate-100' : 'bg-white text-slate-900'
       }`}
     >
-      {/* Custom Triangular Cursor for Live Demo Section */}
-      <CustomTriangularCursor containerRef={sectionRef} theme={theme} />
-
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
 
         {/* 1. TOP HEADER CONTROL CARD */}
@@ -318,10 +293,7 @@ export default function LiveDemo({ theme = 'light' }) {
                   return (
                     <button
                       key={stop.stopNumber}
-                      onClick={() => {
-                        setActiveStop(index);
-                        setIsPlaying(false);
-                      }}
+                      onClick={() => setActiveStop(index)}
                       className={`text-left p-4 rounded-2xl transition-all cursor-pointer border ${
                         isActive
                           ? 'border-2 border-purple-500 bg-purple-950/40 shadow-xs'
@@ -357,92 +329,50 @@ export default function LiveDemo({ theme = 'light' }) {
           {/* RIGHT DISPLAY PANEL (8 Cols) */}
           <div className="lg:col-span-8 flex flex-col gap-6">
 
-            {/* 2. STOP AUDIO PLAYER CARD */}
-            <div className={`rounded-3xl p-5 md:p-6 border transition-colors shadow-xs flex flex-col gap-4 ${
+            {/* 2. STOP HEADER CARD */}
+            <div className={`rounded-3xl p-5 md:p-6 border transition-colors shadow-xs flex items-center justify-between gap-4 flex-wrap ${
               isDark ? 'bg-[#12121a] border-slate-800' : 'bg-white border-black'
             }`}>
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="bg-purple-600 text-white font-bold text-xs px-2.5 py-0.5 rounded-full">
-                      STOP #{currentStop.stopNumber}
-                    </span>
-                    <h3 className={`text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      {currentStop.title}
-                    </h3>
-                  </div>
-                  <div className={`flex items-center gap-1.5 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    <FileCode2 className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{currentStop.filePath}</span>
-                  </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="bg-black dark:bg-white text-white dark:text-black font-bold text-xs px-2.5 py-0.5 rounded-full shadow-xs">
+                    STOP #{currentStop.stopNumber}
+                  </span>
+                  <h3 className={`text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    {currentStop.title}
+                  </h3>
                 </div>
-
-                <div className="flex items-center gap-1.5 ml-auto">
-                  <button
-                    onClick={handlePrevStop}
-                    disabled={activeStop === 0}
-                    className={`p-2 border rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${
-                      isDark 
-                        ? 'border-slate-700 bg-[#1a1a26] hover:bg-slate-800 text-white' 
-                        : 'border-black bg-white hover:bg-slate-100 text-slate-800'
-                    }`}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleNextStop}
-                    disabled={activeStop === tourData.length - 1}
-                    className={`p-2 border rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${
-                      isDark 
-                        ? 'border-slate-700 bg-[#1a1a26] hover:bg-slate-800 text-white' 
-                        : 'border-black bg-white hover:bg-slate-100 text-slate-800'
-                    }`}
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                <div className={`flex items-center gap-1.5 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  <FileCode2 className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{currentStop.filePath}</span>
                 </div>
               </div>
 
-              {/* Audio Control Bar */}
-              <div className={`border rounded-2xl p-4 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap ${
-                isDark ? 'bg-[#1a1a26] border-slate-700' : 'bg-white border-black'
-              }`}>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={toggleAudio}
-                    className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shrink-0 shadow-sm transition-transform active:scale-95 cursor-pointer"
-                  >
-                    {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
-                  </button>
-                  <div>
-                    <div className={`text-sm font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      <span>AI Ghost Audio Narrator</span>
-                      {isPlaying && <span className="flex gap-0.5"><span className="w-1 h-3 bg-purple-500 animate-bounce"></span><span className="w-1 h-3 bg-purple-500 animate-bounce delay-100"></span><span className="w-1 h-3 bg-purple-500 animate-bounce delay-200"></span></span>}
-                    </div>
-                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Click play to listen to hands-free AI narration.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 ml-auto text-xs">
-                  <span className={`font-medium mr-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Speed:</span>
-                  {['1.0x', '1.25x', '1.5x'].map((spd) => (
-                    <button
-                      key={spd}
-                      onClick={() => setPlaybackSpeed(spd)}
-                      className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-semibold transition-colors cursor-pointer ${
-                        playbackSpeed === spd
-                          ? 'bg-purple-600 text-white border-purple-600'
-                          : isDark
-                            ? 'border-slate-700 text-slate-300 bg-[#12121a] hover:bg-slate-800'
-                            : 'border-black text-slate-700 bg-white hover:bg-slate-100'
-                      }`}
-                    >
-                      {spd}
-                    </button>
-                  ))}
-                </div>
+              <div className="flex items-center gap-1.5 ml-auto">
+                <button
+                  onClick={handlePrevStop}
+                  disabled={activeStop === 0}
+                  className={`p-2 border rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${
+                    isDark 
+                      ? 'border-slate-700 bg-[#1a1a26] hover:bg-slate-800 text-white' 
+                      : 'border-black bg-white hover:bg-slate-100 text-slate-800'
+                  }`}
+                  aria-label="Previous stop"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleNextStop}
+                  disabled={activeStop === tourData.length - 1}
+                  className={`p-2 border rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${
+                    isDark 
+                      ? 'border-slate-700 bg-[#1a1a26] hover:bg-slate-800 text-white' 
+                      : 'border-black bg-white hover:bg-slate-100 text-slate-800'
+                  }`}
+                  aria-label="Next stop"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
 

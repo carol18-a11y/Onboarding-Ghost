@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import MouseDrawingTrail from './MouseDrawingTrail';
 
 export default function Architecture({ theme = 'light' }) {
   const archRef = useRef(null);
@@ -36,16 +35,13 @@ export default function Architecture({ theme = 'light' }) {
     <section 
       ref={archRef}
       id="architecture" 
-      className={`relative w-full py-16 md:py-24 px-6 overflow-hidden flex flex-col items-center text-center select-none transition-colors duration-300 ${
+      className={`relative w-full pt-8 sm:pt-10 pb-16 md:pb-24 px-6 overflow-hidden flex flex-col items-center text-center select-none transition-colors duration-300 ${
         isDark ? 'bg-[#09090b] text-slate-100' : 'bg-white text-slate-900'
       }`}
     >
-      {/* Hand-Drawn Cursor Trail Effect (No Grid) */}
-      <MouseDrawingTrail containerRef={archRef} theme={theme} />
-
       {/* Top soft gradient fade overlay */}
       <div 
-        className={`absolute top-0 left-0 right-0 h-24 sm:h-32 pointer-events-none z-1 bg-gradient-to-b ${
+        className={`absolute top-0 left-0 right-0 h-16 sm:h-20 pointer-events-none z-1 bg-gradient-to-b ${
           isDark 
             ? 'from-[#09090b] via-[#09090b]/80 to-transparent' 
             : 'from-white via-white/80 to-transparent'
@@ -53,20 +49,15 @@ export default function Architecture({ theme = 'light' }) {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center w-full">
-        {/* Category Tag */}
-        <span className="text-xs sm:text-sm font-bold tracking-widest text-purple-500 uppercase mb-3 block">
-          UNDER THE HOOD
-        </span>
-
         {/* Main Section Heading */}
-        <h2 className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 max-w-4xl ${
+        <h2 className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-3 max-w-4xl ${
           isDark ? 'text-white' : 'text-slate-900'
         }`}>
           4-Layer Ingestion & Narrative Pipeline
         </h2>
 
         {/* Subtitle */}
-        <p className={`text-base sm:text-lg max-w-2xl leading-relaxed mb-14 font-normal ${
+        <p className={`text-base sm:text-lg max-w-2xl leading-relaxed mb-8 sm:mb-10 font-normal ${
           isDark ? 'text-slate-300' : 'text-slate-600'
         }`}>
           How Onboarding Ghost transforms raw repository commits into verifiable codebase tours.
@@ -77,10 +68,10 @@ export default function Architecture({ theme = 'light' }) {
           {steps.map((item, idx) => (
             <div
               key={idx}
-              className={`rounded-3xl p-6 sm:p-8 flex flex-col items-start text-left border transition-all ${
+              className={`rounded-3xl p-6 sm:p-8 flex flex-col items-start text-left border transition-all duration-300 hover:-translate-y-1.5 ${
                 isDark 
-                  ? 'bg-[#12121a]/90 backdrop-blur-md border-slate-800 text-slate-100 hover:border-slate-700 shadow-xl' 
-                  : 'bg-white/95 backdrop-blur-md border-black text-slate-900 hover:shadow-md'
+                  ? 'bg-[#12121a]/90 backdrop-blur-md border-slate-800 text-slate-100 hover:border-slate-700 hover:shadow-2xl' 
+                  : 'bg-white/95 backdrop-blur-md border-black text-slate-900 hover:shadow-xl'
               }`}
             >
               {/* Step Number Tag */}

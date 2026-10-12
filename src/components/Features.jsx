@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ParticleTextEffect } from './ui/particle-text-effect';
 import GradientCard from './ui/gradient-card';
-import CustomTriangularCursor from './CustomTriangularCursor';
 
 export default function Features({ theme = 'light' }) {
   const isDark = theme === 'dark';
@@ -98,9 +97,6 @@ export default function Features({ theme = 'light' }) {
         isDark ? 'bg-[#09090b] text-slate-100' : 'bg-white text-slate-900'
       }`}
     >
-      {/* Custom Triangular Cursor with Centered Instruction for Features Section */}
-      <CustomTriangularCursor containerRef={sectionRef} theme={theme} />
-
       <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
         {/* Category Badge */}
         <span className="text-xs sm:text-sm font-bold tracking-widest text-purple-500 uppercase mb-3 block">

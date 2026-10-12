@@ -7,3 +7,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+.hide-system-cursor,
+.hide-system-cursor * {
+  cursor: none !important;
+}

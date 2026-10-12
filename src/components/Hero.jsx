@@ -3,7 +3,14 @@ import { Github } from 'lucide-react';
 import TrueFocus from './TrueFocus';
 import SlideCommit from './SlideCommit';
 import PixelGridCanvas from './PixelGridCanvas';
+import BellToggle from './BellToggle';
 import './SampleRepoChip.css';
+
+const SAMPLE_REPOS = [
+  'facebook/react',
+  'vercel/next.js',
+  'supabase/supabase'
+];
 
 export default function Hero({ theme = 'light' }) {
   const heroRef = useRef(null);
@@ -121,37 +128,41 @@ export default function Hero({ theme = 'light' }) {
         )}
 
         {/* Sample Repositories */}
-        <div className="flex items-center gap-2.5 flex-wrap justify-center text-xs md:text-sm text-slate-500 mt-1">
-          <span className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+        <div className="flex items-center gap-3 flex-wrap justify-center text-xs md:text-sm text-slate-500 mt-2">
+          <span className={`font-semibold mr-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
             Try Sample Repos:
           </span>
-          
-          <button
-            type="button"
-            onClick={() => handleSampleClick('facebook/react')}
-            className={`repo-chip ${isDark ? 'dark-chip' : ''} ${currentRepoName === 'facebook/react' ? 'selected' : ''}`}
-          >
-            <span className="repo-chip-bg" aria-hidden="true" />
-            <span className="repo-chip-text">facebook/react</span>
-          </button>
 
-          <button
-            type="button"
-            onClick={() => handleSampleClick('vercel/next.js')}
-            className={`repo-chip ${isDark ? 'dark-chip' : ''} ${currentRepoName === 'vercel/next.js' ? 'selected' : ''}`}
-          >
-            <span className="repo-chip-bg" aria-hidden="true" />
-            <span className="repo-chip-text">vercel/next.js</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSampleClick('supabase/supabase')}
-            className={`repo-chip ${isDark ? 'dark-chip' : ''} ${currentRepoName === 'supabase/supabase' ? 'selected' : ''}`}
-          >
-            <span className="repo-chip-bg" aria-hidden="true" />
-            <span className="repo-chip-text">supabase/supabase</span>
-          </button>
+          {SAMPLE_REPOS.map((repo) => {
+            const isSelected = currentRepoName === repo;
+            return (
+              <BellToggle
+                key={repo}
+                offLabel={repo}
+                onLabel={repo}
+                pressed={isSelected}
+                onChange={() => handleSampleClick(repo)}
+                showIcon={false}
+                size="sm"
+                radius={9999}
+                color={isDark ? '#e2e8f0' : '#0f172a'}
+                background={isDark ? '#18181b' : '#f1f5f9'}
+                onColor="#ffffff"
+                onBackground="#000000"
+                crossfadeMs={200}
+                waves={false}
+                badge={false}
+                clapper={false}
+                className={`font-mono transition-all duration-200 rounded-full ${
+                  isSelected
+                    ? 'ring-2 ring-black dark:ring-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]'
+                    : isDark
+                    ? 'border border-slate-700 hover:border-slate-500 hover:shadow-xs'
+                    : 'border border-slate-300 hover:border-black/50 hover:shadow-xs'
+                }`}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
